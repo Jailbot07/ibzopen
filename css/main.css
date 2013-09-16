@@ -24,28 +24,6 @@ body {
     margin:50px auto;
 }
 
-footer {
-    background-color:#212121;
-    bottom:0;
-    box-shadow: 0 -1px 2px #111111;
-    display:block;
-    height:70px;
-    left:0;
-    position:fixed;
-    width:100%;
-    z-index:100;
-}
-
-footer h2{
-    font-size:22px;
-    font-weight:normal;
-    left:50%;
-    margin-left:-400px;
-    padding:22px 0;
-    position:absolute;
-    width:540px;
-}
-
 footer a.stuts,a.stuts:visited{
     border:none;
     text-decoration:none;
@@ -70,6 +48,6 @@ h3 {
 
 /* tutorial styles */
 #scene {
-    background-image:url(../images/01.jpg);
+    ~background-image:url(../images/01.jpg);
     position:relative;
 }

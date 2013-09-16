@@ -2,6 +2,7 @@ var canvas, ctx;
 var circles = [];
 var selectedCircle;
 var hoveredCircle;
+var counter = 0;
 
 // -------------------------------------------------------------
 
@@ -11,6 +12,9 @@ function Circle(x, y, radius){
     this.x = x;
     this.y = y;
     this.radius = radius;
+	this.vx = 0;
+	this.vy = 0;
+	
 }
 
 // -------------------------------------------------------------
@@ -35,7 +39,8 @@ function drawScene() { // main drawScene function
     ctx.beginPath(); // custom shape begin
     ctx.fillStyle = 'rgba(255, 110, 110, 0.5)';
     ctx.moveTo(circles[0].x, circles[0].y);
-    for (var i=0; i<circles.length; i++) {
+    for (var i=0; i<circles.length; i++) 
+	{
         ctx.lineTo(circles[i].x, circles[i].y);
     }
     ctx.closePath(); // custom shape end
@@ -48,6 +53,51 @@ function drawScene() { // main drawScene function
     for (var i=0; i<circles.length; i++) { // display all our circles
         drawCircle(ctx, circles[i].x, circles[i].y, (hoveredCircle == i) ? 25 : 15);
     }
+}
+
+function updateGame()
+{
+	updateGameLogic();
+	drawScene();
+}
+
+function updateGameLogic()
+{
+	counter++;
+	for (var i=0; i<circles.length; i++)
+	{
+		circles[i].vx += Math.random() - 0.5;
+		circles[i].vy += Math.random() - 0.5;
+		circles[i].x += circles[i].vx;
+		circles[i].y += circles[i].vy;
+		
+		if (circles[i].y + circles[i].radius > canvas.height) 
+		{
+			circles[i].y = canvas.height - circles[i].radius;
+			circles[i].vy = -Math.abs(circles[i].vy);
+		}
+		
+		if (circles[i].x + circles[i].radius > canvas.width) 
+		{
+			circles[i].x = canvas.width - circles[i].radius;
+			circles[i].vx = -Math.abs(circles[i].vx);
+		}
+		
+		if (circles[i].y - circles[i].radius < 0) 
+		{
+			circles[i].y = circles[i].radius;
+			circles[i].vy = Math.abs(circles[i].vy);
+		}
+		
+		if (circles[i].x - circles[i].radius < 0) 
+		{
+			circles[i].x = circles[i].radius;
+			circles[i].vx = Math.abs(circles[i].vx);
+		}
+		
+		if (counter < 15)
+			console.log(circles);
+	}
 }
 
 // -------------------------------------------------------------
@@ -66,50 +116,8 @@ $(function(){
     for (var i=0; i<circlesCount; i++) {
         var x = Math.random()*width;
         var y = Math.random()*height;
-        circles.push(new Circle(x,y,circleRadius));
+        circles.push(new Circle(x, y, circleRadius));
     }
 
-    // binding mousedown event (for dragging)
-    $('#scene').mousedown(function(e) {
-        var canvasPosition = $(this).offset();
-        var mouseX = e.layerX || 0;
-        var mouseY = e.layerY || 0;
-        for (var i=0; i<circles.length; i++) { // checking through all circles - are mouse down inside circle or not
-            var circleX = circles[i].x;
-            var circleY = circles[i].y;
-            var radius = circles[i].radius;
-            if (Math.pow(mouseX-circleX,2) + Math.pow(mouseY-circleY,2) < Math.pow(radius,2)) {
-                selectedCircle = i;
-                break;
-            }
-        }
-    });
-
-    $('#scene').mousemove(function(e) { // binding mousemove event for dragging selected circle
-            var mouseX = e.layerX || 0;
-            var mouseY = e.layerY || 0;
-        if (selectedCircle != undefined) {
-            var canvasPosition = $(this).offset();
-
-            var radius = circles[selectedCircle].radius;
-            circles[selectedCircle] = new Circle(mouseX, mouseY,radius); // changing position of selected circle
-        }
-
-        hoveredCircle = undefined;
-        for (var i=0; i<circles.length; i++) { // checking through all circles - are mouse down inside circle or not
-            var circleX = circles[i].x;
-            var circleY = circles[i].y;
-            var radius = circles[i].radius;
-            if (Math.pow(mouseX-circleX,2) + Math.pow(mouseY-circleY,2) < Math.pow(radius,2)) {
-                hoveredCircle = i;
-                break;
-            }
-        }
-    });
-
-    $('#scene').mouseup(function(e) { // on mouseup - cleaning selectedCircle
-        selectedCircle = undefined;
-    });
-
-    setInterval(drawScene, 30); // loop drawScene
+    setInterval(updateGame, 30); // loop drawScene
 });
